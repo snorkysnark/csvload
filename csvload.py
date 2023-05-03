@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 from pprint import pprint
+import json
 import csv
 
 import sqlglot
@@ -12,7 +13,7 @@ from csvload.argtypes import keyvalue
 
 if __name__ == "__main__":
     argparser = ArgumentParser()
-    argparser.add_argument("db", help="sqlalchemy database url")
+    argparser.add_argument("db", help="sqlalchemy database url or a json file")
     argparser.add_argument("sql", type=Path, help="annotated sql file")
     argparser.add_argument("data", type=Path, help="csv data file")
     argparser.add_argument("--args", nargs="*", action=keyvalue)
@@ -30,7 +31,13 @@ if __name__ == "__main__":
     pprint(table_info)
     print()
 
-    engine = sqlalchemy.create_engine(args.db, echo=True)
+    db_url = (
+        sqlalchemy.URL.create(**json.loads(Path(args.db).read_text()))
+        if args.db.endswith(".json")
+        else args.db
+    )
+
+    engine = sqlalchemy.create_engine(db_url, echo=True)
     with engine.connect() as conn:
         # Have to use sqlparse here, not sqlglot,
         # since converting parsed_statements back to string leaves some
