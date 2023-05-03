@@ -2,13 +2,21 @@ from dataclasses import dataclass
 from typing import Any, Callable, Optional
 from sqlglot.expressions import Expression
 
+from .value_function import Environment
 
-def is_create_table(expression: Optional[Expression]):
+
+def is_create_table(statement: Optional[Expression]):
     return (
-        expression
-        and expression.key == "create"
-        and expression.args["kind"].lower() == "table"
+        statement
+        and statement.key == "create"
+        and statement.args["kind"].lower() == "table"
     )
+
+
+def find_annotation(comments: list[str]):
+    for comment in comments:
+        if comment.startswith("{") and comment.endswith("}"):
+            return comment[1:-1]
 
 
 @dataclass
@@ -17,11 +25,19 @@ class AnnotatedColumn:
     get_value: Optional[Callable[[dict], Any]]
 
     @staticmethod
-    def from_expression(expression: Expression, args: dict):
-        if expression.key != "columndef":
-            raise RuntimeError(f"Expected columndef expression, found {expression.key}")
+    def from_statement(statement: Expression, env: Environment):
+        if statement.key != "columndef":
+            raise RuntimeError(f"Expected columndef expression, found {statement.key}")
 
-        name = expression.args["this"].args["this"]
+        name = statement.args["this"].args["this"]
+        annotation = (
+            find_annotation(statement.comments) if statement.comments else None
+        )
+        get_value = (
+            env.create_lambda_from_annotation(annotation, name) if annotation else None
+        )
+
+        return AnnotatedColumn(name, get_value)
 
 
 @dataclass
@@ -31,10 +47,10 @@ class AnnotatedTable:
     columns: list[AnnotatedColumn]
 
     @staticmethod
-    def from_expressions(expressions: list[Optional[Expression]]):
-        create_table = next(expr for expr in expressions if is_create_table(expr))
+    def from_statements(statements: list[Optional[Expression]], args: dict):
+        create_table = next(expr for expr in statements if is_create_table(expr))
         if not create_table:
-            raise RuntimeError("CREATE TABLE expression not found")
+            raise RuntimeError("CREATE TABLE statement not found")
 
         table_expr = create_table.args["this"].args["this"]
         table = table_expr.args["this"].args["this"]
@@ -43,4 +59,9 @@ class AnnotatedTable:
 
         columndefs = create_table.args["this"].args["expressions"]
 
-        return AnnotatedTable(table=table, schema=schema, columns=columndefs)
+        env = Environment(args)
+        parsed_columns = list(
+            map(lambda coldef: AnnotatedColumn.from_statement(coldef, env), columndefs)
+        )
+
+        return AnnotatedTable(table=table, schema=schema, columns=parsed_columns)
