@@ -19,10 +19,29 @@ def find_all_comments(root: Expression):
             yield from expr.comments
 
 
+def find_text_in_braces(comment: str):
+    """Find the first string in the outermost curly braces"""
+    first_opening_brace = comment.find("{")
+    if first_opening_brace == -1:
+        return None
+
+    level = 1
+
+    for i in range(first_opening_brace + 1, len(comment)):
+        if comment[i] == "{":
+            level += 1
+        elif comment[i] == "}":
+            level -= 1
+
+        if level == 0:
+            return comment[first_opening_brace + 1 : i]
+
+
 def find_annotation(expression: Expression):
     for comment in find_all_comments(expression):
-        if comment.startswith("{") and comment.endswith("}"):
-            return comment[1:-1]
+        annotation = find_text_in_braces(comment)
+        if annotation:
+            return annotation
 
 
 @dataclass
