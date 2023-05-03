@@ -5,10 +5,9 @@ import json
 import csv
 
 import sqlglot
-import sqlparse
 import sqlalchemy
 
-from csvload.parser import AnnotatedTable
+from csvload.parser import AnnotatedTable, detect_dialect
 from csvload.argtypes import keyvalue
 
 if __name__ == "__main__":
@@ -24,7 +23,8 @@ if __name__ == "__main__":
     print()
 
     sql_script = args.sql.read_text()
-    parsed_statements = sqlglot.parse(sql_script)
+    dialect = detect_dialect(sql_script)
+    parsed_statements = sqlglot.parse(sql_script, read=dialect)
     table_info = AnnotatedTable.from_statements(parsed_statements, kwargs)
 
     print("Parsed CREATE TABLE statement:")
@@ -42,8 +42,9 @@ if __name__ == "__main__":
         # Have to use sqlparse here, not sqlglot,
         # since converting parsed_statements back to string leaves some
         # db-specific keywords (like AUTOINCREMENT) corrupted
-        for statement in sqlparse.split(sql_script):
-            conn.execute(sqlalchemy.text(statement))
+        for statement in parsed_statements:
+            if statement:
+                conn.execute(sqlalchemy.text(statement.sql(dialect=dialect)))
 
         # Load the created table into sqlalchemy
         engine.echo = False

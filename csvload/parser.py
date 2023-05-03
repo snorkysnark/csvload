@@ -1,5 +1,7 @@
+import re
 from dataclasses import dataclass
 from typing import Any, Callable, Optional
+import sqlglot
 from sqlglot.expressions import Expression
 
 from .value_function import Environment
@@ -92,3 +94,11 @@ class AnnotatedTable:
                 annotated_columns.append(parsed_column)
 
         return AnnotatedTable(name, schema, annotated_columns)
+
+
+def detect_dialect(sql: str):
+    match = re.search(r"^--dialect=(\w+)$", sql, re.MULTILINE)
+    if match:
+        return match.group(1)
+    else:
+        raise RuntimeError("The script must contain a comment of type '--dialect=...'")

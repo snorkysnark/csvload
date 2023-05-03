@@ -67,12 +67,6 @@ version = "11.6.3"
 summary = "An easily customizable SQL parser and transpiler"
 
 [[package]]
-name = "sqlparse"
-version = "0.4.4"
-requires_python = ">=3.5"
-summary = "A non-validating SQL parser."
-
-[[package]]
 name = "tomli"
 version = "2.0.1"
 requires_python = ">=3.7"
@@ -87,7 +81,7 @@ summary = "Backported and Experimental Type Hints for Python 3.7+"
 [metadata]
 lock_version = "4.2"
 groups = ["default"]
-content_hash = "sha256:6cc9d0eecccd6b8bbbf096a4307f7aa2b1aaedff91acf6062f37265534f6eff8"
+content_hash = "sha256:f7d82de82f7bb043f9001edc4550034578b98a117cafaa6a44105d9590d7549c"
 
 [metadata.files]
 "colorama 0.4.6" = [
@@ -222,10 +216,6 @@ content_hash = "sha256:6cc9d0eecccd6b8bbbf096a4307f7aa2b1aaedff91acf6062f3726553
 "sqlglot 11.6.3" = [
     {url = "https://files.pythonhosted.org/packages/16/b0/56b6beb6e13499e529bae87af2581d1d1b28bb527f375ebd369e22f1fb37/sqlglot-11.6.3-py3-none-any.whl", hash = "sha256:88389f3a88e83268abd9bc4e56d9713d0c756460fea85a8dedb0c07e37f418b8"},
     {url = "https://files.pythonhosted.org/packages/f8/48/9f226b6db1a1a14587340935f663e5fd83705450f06aeb922aaabaf3c97d/sqlglot-11.6.3.tar.gz", hash = "sha256:b1bf672a4d464a869f999fe1e8622aa63845ec625849ed253f1542b4d26a48a9"},
-]
-"sqlparse 0.4.4" = [
-    {url = "https://files.pythonhosted.org/packages/65/16/10f170ec641ed852611b6c9441b23d10b5702ab5288371feab3d36de2574/sqlparse-0.4.4.tar.gz", hash = "sha256:d446183e84b8349fa3061f0fe7f06ca94ba65b426946ffebe6e3e8295332420c"},
-    {url = "https://files.pythonhosted.org/packages/98/5a/66d7c9305baa9f11857f247d4ba761402cea75db6058ff850ed7128957b7/sqlparse-0.4.4-py3-none-any.whl", hash = "sha256:5430a4fe2ac7d0f93e66f1efc6e1338a41884b7ddf2a350cedd20ccc4d9d28f3"},
 ]
 "tomli 2.0.1" = [
     {url = "https://files.pythonhosted.org/packages/97/75/10a9ebee3fd790d20926a90a2547f0bf78f371b2f13aa822c759680ca7b9/tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
