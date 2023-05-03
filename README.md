@@ -7,6 +7,7 @@ based on column annotations
 ## Example SQL script
 
 ```sql
+--dialect=sqlite
 DROP TABLE IF EXISTS foo;
 CREATE TABLE foo(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -16,6 +17,11 @@ CREATE TABLE foo(
     group_name TEXT NOT NULL --{arg("group")} console argument
 );
 ```
+
+For successfull SQL parsing,
+the script **must** contain a comment of the form `--dialect=...`
+
+[See supported dialects](https://github.com/tobymao/sqlglot/blob/main/sqlglot/dialects/dialect.py)
 
 ## Annotations
 
