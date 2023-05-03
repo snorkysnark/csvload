@@ -30,5 +30,5 @@ class Environment:
         source = "lambda row: " + annotation
 
         return CompiledFunction(
-            source, eval(source, {}, {"auto": get_field, "arg": self.get_arg})
+            source, eval(source, {"auto": get_field, "arg": self.get_arg})
         )

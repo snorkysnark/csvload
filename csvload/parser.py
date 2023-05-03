@@ -28,7 +28,7 @@ def find_annotation(expression: Expression):
 @dataclass
 class AnnotatedColumn:
     name: str
-    get_value: Optional[Callable[[dict], Any]]
+    get_value: Callable[[dict], Any]
 
     @staticmethod
     def from_expression(expression: Expression, env: Environment):
@@ -41,14 +41,15 @@ class AnnotatedColumn:
             env.create_lambda_from_annotation(annotation, name) if annotation else None
         )
 
-        return AnnotatedColumn(name, get_value)
+        if get_value:
+            return AnnotatedColumn(name, get_value)
 
 
 @dataclass
 class AnnotatedTable:
-    table: str
+    name: str
     schema: Optional[str]
-    columns: list[AnnotatedColumn]
+    annotated_columns: list[AnnotatedColumn]
 
     @staticmethod
     def from_statements(statements: list[Optional[Expression]], args: dict):
@@ -57,15 +58,18 @@ class AnnotatedTable:
             raise RuntimeError("CREATE TABLE statement not found")
 
         table_expr = create_table.args["this"].args["this"]
-        table = table_expr.args["this"].args["this"]
+        name = table_expr.args["this"].args["this"]
         schema_expr = table_expr.args["db"]
         schema = schema_expr.args["this"] if schema_expr else None
 
         columndefs = create_table.args["this"].args["expressions"]
 
         env = Environment(args)
-        parsed_columns = list(
-            map(lambda coldef: AnnotatedColumn.from_expression(coldef, env), columndefs)
-        )
+        annotated_columns = []
 
-        return AnnotatedTable(table=table, schema=schema, columns=parsed_columns)
+        for coldef in columndefs:
+            parsed_column = AnnotatedColumn.from_expression(coldef, env)
+            if parsed_column:
+                annotated_columns.append(parsed_column)
+
+        return AnnotatedTable(name, schema, annotated_columns)
