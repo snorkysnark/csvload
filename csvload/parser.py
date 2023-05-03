@@ -13,8 +13,14 @@ def is_create_table(statement: Optional[Expression]):
     )
 
 
-def find_annotation(comments: list[str]):
-    for comment in comments:
+def find_all_comments(root: Expression):
+    for expr, parent, key in root.walk():
+        if expr.comments:
+            yield from expr.comments
+
+
+def find_annotation(expression: Expression):
+    for comment in find_all_comments(expression):
         if comment.startswith("{") and comment.endswith("}"):
             return comment[1:-1]
 
@@ -25,14 +31,12 @@ class AnnotatedColumn:
     get_value: Optional[Callable[[dict], Any]]
 
     @staticmethod
-    def from_statement(statement: Expression, env: Environment):
-        if statement.key != "columndef":
-            raise RuntimeError(f"Expected columndef expression, found {statement.key}")
+    def from_expression(expression: Expression, env: Environment):
+        if expression.key != "columndef":
+            raise RuntimeError(f"Expected columndef expression, found {expression.key}")
 
-        name = statement.args["this"].args["this"]
-        annotation = (
-            find_annotation(statement.comments) if statement.comments else None
-        )
+        name = expression.args["this"].args["this"]
+        annotation = find_annotation(expression)
         get_value = (
             env.create_lambda_from_annotation(annotation, name) if annotation else None
         )
@@ -61,7 +65,7 @@ class AnnotatedTable:
 
         env = Environment(args)
         parsed_columns = list(
-            map(lambda coldef: AnnotatedColumn.from_statement(coldef, env), columndefs)
+            map(lambda coldef: AnnotatedColumn.from_expression(coldef, env), columndefs)
         )
 
         return AnnotatedTable(table=table, schema=schema, columns=parsed_columns)
