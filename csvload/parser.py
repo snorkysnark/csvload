@@ -97,7 +97,7 @@ class AnnotatedTable:
 
 
 def detect_dialect(sql: str):
-    match = re.search(r"^--dialect=(\w+)$", sql, re.MULTILINE)
+    match = re.search(r"^--dialect=(\w*)$", sql, re.MULTILINE)
     if match:
         return match.group(1)
     else:
