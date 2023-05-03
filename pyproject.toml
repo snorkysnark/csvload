@@ -1,0 +1,15 @@
+[tool.pdm]
+
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "snorkysnark", email = "snorkysnark@gmail.com"},
+]
+dependencies = [
+    "sqlalchemy>=2.0.12",
+    "sqlglot>=11.6.3",
+]
+requires-python = ">=3.10"
+license = {text = "MIT"}
