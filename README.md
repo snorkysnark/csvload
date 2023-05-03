@@ -19,7 +19,7 @@ CREATE TABLE foo(
 ```
 
 For successfull SQL parsing,
-the script **must** contain a comment of the form `--dialect=...`
+the file **must** contain a comment in the form `--dialect=...`
 
 [See supported dialects](https://github.com/tobymao/sqlglot/blob/main/sqlglot/dialects/dialect.py)
 
