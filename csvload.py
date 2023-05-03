@@ -8,17 +8,23 @@ import sqlparse
 import sqlalchemy
 
 from csvload.parser import AnnotatedTable
+from csvload.argtypes import keyvalue
 
 if __name__ == "__main__":
     argparser = ArgumentParser()
     argparser.add_argument("db", help="sqlalchemy database url")
     argparser.add_argument("sql", type=Path, help="annotated sql file")
     argparser.add_argument("data", type=Path, help="csv data file")
+    argparser.add_argument("--args", nargs="*", action=keyvalue)
     args = argparser.parse_args()
+
+    kwargs = args.args or {}
+    print("Args:", kwargs)
+    print()
 
     sql_script = args.sql.read_text()
     parsed_statements = sqlglot.parse(sql_script)
-    table_info = AnnotatedTable.from_statements(parsed_statements, {"group": "egg_irl"})
+    table_info = AnnotatedTable.from_statements(parsed_statements, kwargs)
 
     print("Parsed CREATE TABLE statement:")
     pprint(table_info)
