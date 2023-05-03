@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
+from pprint import pprint
 
 import sqlglot
 import sqlparse
@@ -17,6 +18,10 @@ if __name__ == "__main__":
     sql_script = args.sql.read_text()
     parsed_statements = sqlglot.parse(sql_script)
     table_info = AnnotatedTable.from_statements(parsed_statements, {"group": "egg_irl"})
+
+    print("Parsed CREATE TABLE statement:")
+    pprint(table_info)
+    print()
 
     engine = sqlalchemy.create_engine(args.db, echo=True)
     with engine.connect() as conn:
