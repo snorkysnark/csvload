@@ -10,6 +10,7 @@ authors = [
 dependencies = [
     "sqlalchemy>=2.0.12",
     "sqlglot>=11.6.3",
+    "sqlparse>=0.4.4",
 ]
 requires-python = ">=3.10"
 license = {text = "MIT"}
